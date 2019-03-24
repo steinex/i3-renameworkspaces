@@ -46,8 +46,8 @@ sub recurse {
         my $class = $$parent{'window_properties'}{'class'};
         my $name = $$config{'instances'}{$instance} ||
                    $$config{'classes'}{$class} ||
-                   lc($class);
-        push(@$windows, $name) if !grep {$_ eq $name} @$windows;
+                   $class;
+        push(@$windows, $name);
     }
     foreach (@{$$parent{'nodes'}})          { recurse($_, $wss, $windows) };
     foreach (@{$$parent{'floating_nodes'}}) { recurse($_, $wss, $windows) };
@@ -61,7 +61,7 @@ sub updatelabels {
         # say Dumper($wss);
         while (my ($num, $ws) = each(%$wss)) {
             my $oldname = $$ws{'name'};
-            my $newname = join(': ', $num, join(' ', @{$$ws{'windows'}}) || ());
+            my $newname = join('  ', $num, join(' ', @{$$ws{'windows'}}) || ());
             if ($num >= 1 && $oldname ne $newname) {
                 say("\"$oldname\" -> \"$newname\"");
                 $i3->command("rename workspace \"$oldname\" to \"$newname\"");
